@@ -1,0 +1,6 @@
+##PKG_CPPFLAGS=-I/path/to/udunits/header
+##PKG_LIBS=-L/path/to/udunits/lib -ludunits
+
+PKG_LIBS=-L/usr/local/lib -ludunits
+PKG_CPPFLAGS=-I/usr/local/include
+

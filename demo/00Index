@@ -1,0 +1,5 @@
+demo1_utcal		Demonstrate converting temporal values to calendar dates
+demo2_invcal		Demonstrate converting calendar dates to temporal values
+demo3_conversions1	Demonstrate converting units (first demo of two)
+demo4_conversions2	Demonstrate converting units (second demo of two)
+demo5_utils		Demonstrate udunits utilities; day of week calculator, query unit attributes

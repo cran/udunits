@@ -1,0 +1,19 @@
+This code requires Unidata's "udunits" library and header files, which
+are available from:
+
+http://www.unidata.ucar.edu/packages/udunits/
+
+I've tested this with udunits library vesion 1.11.7.  Presumably newer
+versions will work as well; don't know about older ones.
+
+The Makefile tries to find the udunits library and header files.  However,
+if they are installed in a location that is not found, then this won't
+compile.  In that event, the Makefile should be edited to explicitly put
+in the location of the udunits library and header files.
+
+--David Pierce
+Climate Research Division
+Scripps Institution of Oceanography
+dpierce@ucsd.edu
+30 Sep 2003
+

@@ -1,0 +1,8 @@
+
+.First.lib<-function(libname,pkgname){
+    if (@HAVE_UDUNITS@)
+        library.dynam("udunits",pkgname,libname)
+    else
+        stop("You don't have udunits installed.")
+}
+ 

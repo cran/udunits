@@ -1,0 +1,39 @@
+AC_INIT(R/load.R.in)
+
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+	echo "Could not determine R_HOME"
+	exit 1
+fi
+CC=`${R_HOME}/bin/R CMD config CC`
+CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
+
+AC_PATH_UDUNITS
+do_udunits=false
+if test x$UDUNITS_INCDIR != x; then
+	if test x$UDUNITS_LIBDIR != x; then
+		do_udunits=true
+	fi
+fi
+if test $do_udunits = true; then
+	echo "udunits dirs: include: $UDUNITS_INCDIR  library: $UDUNITS_LIBDIR  libname: $UDUNITS_LIBNAME"
+	HAVE_UDUNITS=TRUE
+else
+	echo "***********************************************************************************"
+	echo "***********************************************************************************"
+	echo "NOTE: udunits package not found!  Either install it in a standard place (/usr or"
+	echo "/usr/local), or edit the file udunits_1.0/udunits/src/Makevars.in and put in the"
+	echo "location where the package is installed."
+	echo "***********************************************************************************"
+	echo "***********************************************************************************"
+	HAVE_UDUNITS=FALSE
+	exit -1
+fi
+
+AC_SUBST(HAVE_UDUNITS)
+AC_SUBST(UDUNITS_INCDIR)
+AC_SUBST(UDUNITS_LIBDIR)
+AC_SUBST(UDUNITS_LIBNAME)
+
+AC_OUTPUT(R/load.R
+          src/Makevars)

@@ -1,0 +1,6 @@
+##PKG_CPPFLAGS=-I/path/to/udunits/header
+##PKG_LIBS=-L/path/to/udunits/lib -ludunits
+
+PKG_LIBS=-L@UDUNITS_LIBDIR@ -l@UDUNITS_LIBNAME@
+PKG_CPPFLAGS=-I@UDUNITS_INCDIR@
+

@@ -1,0 +1,10 @@
+udunits                 A Library for Handling and Converting Units
+print.utDate            Print a Formatted Calendar Date
+utCalendar              Convert Temporal Amounts to Calendar Date
+utConvert               Convert Values Between Units
+utDayOfWeek             Convert Date to Day of Week
+utHasOrigin             Determines if Unit has an Origin
+utInit                  Initialize Udunits Library
+utInvCalendar           Convert a Calendar Date into a Temporal Amount
+utIsTime                Determines if Unit is Temporal
+utScan                  Convert Units String to Internal Format
