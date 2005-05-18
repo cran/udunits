@@ -2,6 +2,8 @@
 \alias{udunits}
 \title{A Library for Handling and Converting Units}
 \description{
+ This is the udunits package, version 1.2 (14 April 2005). 
+
  Unidata's udunits library is a suite of routines for manipulating physical units.
  Using it, you can convert values that are given in one unit (for example,
  meters) to another compatible unit (for example, inches).

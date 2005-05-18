@@ -9,19 +9,29 @@
 }
 \arguments{
   \item{date}{An object of class 'utDate', which has the following fields:
-  year, month, day, hour, minute, second.}
+  year, month, day, hour, minute, second.  This can also be a list of
+  objects of class 'utDate'.}
   \item{unit}{A temporal unit that has an origin.}
 }
-\value{The amount of the temporal units that the date corresponds to.}
+\value{The amount of the temporal units that the date corresponds to.
+  If the input 'date' is a list of objects of class 'utDate', this is an
+  double precision array, otherwise it's a double precision scalar.}
 }
 \references{
 \url{http://www.unidata.ucar.edu/packages/udunits/}
 }
 \details{
  This routine converts a date, given by the fields in a "utDate"
- class object (which your code needs explicitly construct), 
+ class object passed in as the first argument (and which your code needs explicitly construct), 
  into the amount of a temporal unit specified by the unit "unit".
- For example, if "unit" is the internally-formatted version of the
+ The fields in "utDate" are: year [integer], month [integer], 
+ day [integer], hour [integer], minute [integer], and second [double precision].
+ Note that every field in class "utDate" except the "second" field
+ is an integer -- don't try to set these to floating point values
+ or it won't work (i.e., setting date\$year to "1990.5" will NOT indicate a date
+ in the middle of 1990!).
+
+ Example: if "unit" is the internally-formatted version of the
  units string "days since 1900-01-01" (i.e., returned by the
  call to utScan("days since 1900-01-01"), and this routine is
  passed the date 1900-01-03, then it will return the value

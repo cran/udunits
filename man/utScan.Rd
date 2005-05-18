@@ -51,6 +51,4 @@ utInit()
 unitstring <- "m"
 u <- utScan(unitstring)
 }
-\note{The unit string "C" refers to coulombs, not degrees Celsius (which 
- is given by the unit string "degC").}
 \keyword{utilities}

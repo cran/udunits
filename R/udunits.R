@@ -7,6 +7,12 @@
 # 18-June-2001
 #
 #==========================================================================
+version.udunits <- function() {
+	
+	return("1.2")
+}
+
+#==========================================================================
 # Initialize the udunits library.  This should be called exactly once.
 #
 utInit <- function() {
@@ -54,7 +60,15 @@ utScan <- function( unitstring ) {
 # time unit and have an origin; it is returned by a call to
 # 'utScan'.  Returns a 'utDate' class object.
 #
-utCalendar <- function( value, unit )
+# Added in version 1.2: value can be a numeric vector of values.
+# Return in this event depends on 'style' arg, which can be either
+# 'list' or 'array'.  If it is 'list', then a list of utDate objects 
+# is returned, and each element is itself a utDate object.  (i.e., 
+# the n'th year is retval[[n]]$year, etc.).  If style is 'array',
+# then retval$year is an array of N years, retval$month is an
+# array of N months, etc.
+#
+utCalendar <- function( value, unit, style='list' )
 {
 	if( is.character(unit) )
 		unit <- utScan( unit )
@@ -62,66 +76,91 @@ utCalendar <- function( value, unit )
 	if( class(unit) != "udUnits" )
 		stop("utCalendar: I was passed a unit that is NOT of class 'udUnits'!")
 
-	rv <- list()
-	rv$ymdhm  <- integer(5)
-	rv$error  <- -1
-	rv$second <- 1.5	# just needs to be a double precision
-	
-	rv <- .C("R_utCalendar",
-		as.double(value),
+	if( ! is.double(value) )
+		value <- as.double(value)
+
+	if( style == 'list' )
+		istyle <- 1
+	else if( style == 'array' )
+		istyle <- 2
+	else
+		stop(paste("Error, style arg must be either 'list' or 'array'.  Passed value:",style))
+
+	rv <- .Call("R_utCalendar_v1p2",
+		value,
 		as.double(unit$originfactor),
 		as.integer(unit$hasoriginpowers),
-		ymdhm=as.integer(rv$ymdhm),
-		second=as.double(rv$second),
-		error=as.integer(rv$error),
+		as.integer(istyle),
 		PACKAGE="udunits")
-	if( rv$error != 0 ) 
-		stop("Error in utCalendar")
 
-	retval        <- list()
-	retval$year   <- rv$ymdhm[1]
-	retval$month  <- rv$ymdhm[2]
-	retval$day    <- rv$ymdhm[3]
-	retval$hour   <- rv$ymdhm[4]
-	retval$minute <- rv$ymdhm[5]
-	retval$second <- rv$second
-
-	class(retval) <- "utDate"
-
-	return(retval)
+	return(rv)
 }
 
 #==========================================================================
 # Convers a calendar date specified by a 'utDate' class object
 # into a value (amount) given in the units specified by 'unit' (which is a 
 # unit-spec string or 'udUnits' class object).  Returns that value.
+# Added in version 1.2: date can be a list of objects of class 'utDate',
+# in which case this returns a vector of values rather than a scalar.
 #
 utInvCalendar <- function( date, unit )
 {
 	if( is.character(unit) )
 		unit <- utScan( unit )
 
-	if( class(unit) != "udUnits" )
+	if( class(unit) != "udUnits" ) 
 		stop("utInvCalendar: I was passed a unit that is NOT of class 'udUnits'!")
 
-	if( class(date) != "utDate" )
-		stop("utInvCalendar: I was passed a date that is NOT of class 'utDate'!")
+	if( class(date) == "utDate" ) 
+		nn <- 1
+	else
+		{
+		if( class(date) == "list") {
+			nn <- length(date)
+			if( (nn < 1) || (class(date[[1]]) != "utDate"))
+				stop("utInvCalendar: I was passed a date that is NOT of class 'utDate' (or, not a list of objects of class 'utDate')!")
+			}
+		}
 
 	rv <- list()
-	rv$ymdhm <- integer(5)
-	rv$error <- -1
-	rv$value <- double(1)
+	rv$year   <- array(0,nn)
+	rv$month  <- array(0,nn)
+	rv$day    <- array(0,nn)
+	rv$hour   <- array(0,nn)
+	rv$minute <- array(0,nn)
+	rv$secod  <- array(0.0,nn)
+	rv$error  <- -1
+	rv$value  <- double(nn)
 	
-	rv$ymdhm[1] <- date$year
-	rv$ymdhm[2] <- date$month
-	rv$ymdhm[3] <- date$day
-	rv$ymdhm[4] <- date$hour
-	rv$ymdhm[5] <- date$minute
-
+	if( nn == 1 ) {
+		rv$year   <- date$year
+		rv$month  <- date$month
+		rv$day    <- date$day
+		rv$hour   <- date$hour
+		rv$minute <- date$minute
+		rv$second <- date$second
+		}
+	else
+		{
+		for( i in 1:nn ) {
+			rv$year[i]   <- date[[i]]$year
+			rv$month[i]  <- date[[i]]$month
+			rv$day[i]    <- date[[i]]$day
+			rv$hour[i]   <- date[[i]]$hour
+			rv$minute[i] <- date[[i]]$minute
+			rv$second[i] <- date[[i]]$second
+			}
+		}
+	
 	rv <- .C("R_utInvCalendar",
-		as.integer(rv$ymdhm),
-		as.double(date$second),
-		as.double(unit$originfactor),
+		as.integer(nn),
+		as.integer(rv$year),
+		as.integer(rv$month),
+		as.integer(rv$day),
+		as.integer(rv$hour),
+		as.integer(rv$minute),
+		as.double (rv$second),
+		as.double (unit$originfactor),
 		as.integer(unit$hasoriginpowers),
 		value=as.double(rv$value),
 		error=as.integer(rv$error),

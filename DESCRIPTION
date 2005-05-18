@@ -1,7 +1,7 @@
 Package: udunits
 Title: interface to Unidata's routines to convert units
 Maintainer: David Pierce <dpierce@ucsd.edu>
-Version: 1.0
+Version: 1.2
 Author: David Pierce
 Description: This package provides an R interface to the Unidata
   udunits library routines, which can convert quantities between various units.
@@ -20,3 +20,4 @@ Description: This package provides an R interface to the Unidata
   must already be installed on your machine for this package to work.
 License: GPL version 2 or newer
 URL: http://www.unidata.ucar.edu/packages/udunits/
+Packaged: Wed May 18 10:23:12 2005; root
