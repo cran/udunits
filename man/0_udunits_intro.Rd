@@ -2,7 +2,7 @@
 \alias{udunits}
 \title{A Library for Handling and Converting Units}
 \description{
- This is the udunits package, version 1.2 (14 April 2005). 
+ This is the udunits package, version 1.3 (31 January 2006). 
 
  Unidata's udunits library is a suite of routines for manipulating physical units.
  Using it, you can convert values that are given in one unit (for example,
@@ -43,7 +43,8 @@
  by an explicit call to \code{utScan()} rather than having the library routines
  call it over and over for you.
 }
-\url{http://www.unidata.ucar.edu/packages/udunits/}
+\references{
+ http://www.unidata.ucar.edu/packages/udunits/
 }
 \author{Library routines by Unidata; interface glue by David W. Pierce \email{dpierce@ucsd.edu}}
 \seealso{ \code{\link[udunits]{utInit}}, \code{\link[udunits]{utScan}}, 

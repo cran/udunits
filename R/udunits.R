@@ -9,7 +9,7 @@
 #==========================================================================
 version.udunits <- function() {
 	
-	return("1.2")
+	return("1.3")
 }
 
 #==========================================================================
@@ -68,7 +68,10 @@ utScan <- function( unitstring ) {
 # then retval$year is an array of N years, retval$month is an
 # array of N months, etc.
 #
-utCalendar <- function( value, unit, style='list' )
+# Added in version 1.3: a new parameter 'calendar', which is one of the
+# following strings: "standard", "gregorian", "noleap", "365_day", "360_day"
+#
+utCalendar <- function( value, unit, style='list', calendar='standard' )
 {
 	if( is.character(unit) )
 		unit <- utScan( unit )
@@ -86,11 +89,12 @@ utCalendar <- function( value, unit, style='list' )
 	else
 		stop(paste("Error, style arg must be either 'list' or 'array'.  Passed value:",style))
 
-	rv <- .Call("R_utCalendar_v1p2",
+	rv <- .Call("R_utCalendar_v1p3",
 		value,
 		as.double(unit$originfactor),
 		as.integer(unit$hasoriginpowers),
 		as.integer(istyle),
+		as.character(calendar),
 		PACKAGE="udunits")
 
 	return(rv)
@@ -120,6 +124,8 @@ utInvCalendar <- function( date, unit )
 			if( (nn < 1) || (class(date[[1]]) != "utDate"))
 				stop("utInvCalendar: I was passed a date that is NOT of class 'utDate' (or, not a list of objects of class 'utDate')!")
 			}
+		else
+			stop("utInvCalendar: I was passed a date that is neither of class 'utDate' nor a list of objects of class 'utDate'!")
 		}
 
 	rv <- list()

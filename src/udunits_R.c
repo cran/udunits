@@ -5,6 +5,8 @@
 #include <R.h> 
 #include <Rinternals.h>
 
+#include "utCalendar_cal.h"
+
 /******************************************************************/
 /* Initializes the udunits package.
  * Does NOT support the 'path' argument -- set it using UDUNITS_PATH
@@ -145,6 +147,7 @@ void R_utScan( char **spec, double *origin_factor, int *hasorigin_powers,
  *		calendar date.
  *	sx_origin_factor, sx_hasorigin_powers: describe the 
  * 		udunits-processed time unit.
+ * 	calendar: either 'standard', 'noleap', or '360_day'
  *
  * Return value:
  * 	If only 1 value is passed, then returns an object of class "utDate"
@@ -154,24 +157,28 @@ void R_utScan( char **spec, double *origin_factor, int *hasorigin_powers,
  *			of which is an array of length n,
  *		where n is the number of values passed in.
  */
-SEXP R_utCalendar_v1p2( SEXP sx_value, SEXP sx_origin_factor, SEXP sx_hasorigin_powers, SEXP sx_style )
+SEXP R_utCalendar_v1p3( SEXP sx_value, SEXP sx_origin_factor, SEXP sx_hasorigin_powers, SEXP sx_style,
+	SEXP sx_calendar )
 {
 	utUnit 	u;
 	int 	i, nvals, retval, *hasorigin_powers, year, month, day, hour, minute, *style;
 	float	second;
 	double	*origin_factor, *value;
+	char	*calendar;
 	SEXP	sx_big_retval, sx_single_retval, sx_year, sx_month, sx_day, sx_hour, sx_minute, 
 		sx_name, sx_second, sx_retarr_year, sx_retarr_month, sx_retarr_day, sx_retarr_hour,
-		sx_retarr_minute, sx_retarr_second;
+		sx_retarr_minute, sx_retarr_second, sx_calendar_elt;
 
 	nvals = length( sx_value );
 	if( nvals < 1 ) 
-		error( "utCalendar_v1p2 (R version): error: passed funny # of vals to convert: %d\n", nvals );
+		error( "utCalendar_v1p3 (R version): error: passed funny # of vals to convert: %d\n", nvals );
 
 	value            = REAL(sx_value);
 	origin_factor    = REAL(sx_origin_factor);
 	hasorigin_powers = INTEGER(sx_hasorigin_powers);
 	style            = INTEGER(sx_style);
+	sx_calendar_elt	 = STRING_ELT(sx_calendar,0);
+	calendar	 = CHAR(sx_calendar_elt);
 
 	R_ututil_Rstyle_to_utUnit( origin_factor, hasorigin_powers, &u );
 
@@ -214,12 +221,12 @@ SEXP R_utCalendar_v1p2( SEXP sx_value, SEXP sx_origin_factor, SEXP sx_hasorigin_
 			}
 
 		else
-			error( "utCalendar_v1p2 (R version): error: passed unknown style, only 1 or 2 recognized!\n" );
+			error( "utCalendar_v1p3 (R version): error: passed unknown style, only 1 or 2 recognized!\n" );
 		}
 
 	for( i=0; i<nvals; i++ ) {
-		if( (retval = utCalendar( *(value+i), &u, &year, &month,
-				&day, &hour, &minute, &second )) != 0 ) {
+		if( (retval = utCalendar_cal( *(value+i), &u, &year, &month,
+				&day, &hour, &minute, &second, calendar )) != 0 ) {
 			if( retval == UT_ENOINIT ) 
 				error( "utCalendar (R version): error: udunits package not initialized yet!  You must call utInit() first." );
 
@@ -299,56 +306,6 @@ SEXP R_utCalendar_v1p2( SEXP sx_value, SEXP sx_origin_factor, SEXP sx_hasorigin_
 		{
 		UNPROTECT(1);
 		return( sx_single_retval );
-		}
-}
-
-/******************************************************************/
-/* Inputs:
- *	value: the amount of time units we want to convert to a
- *		calendar date.
- *	nvals: number of values that are being input.
- *	origin_factor, hasorigin_powers: describe the udunits-processed
- *		time unit.
- * Outputs:
- *	ymdhm: integer year, month, day, hour, and minute.
- *	second: seconds
- *	retval: 0 on success, not 0 otherwise.
- */
-void R_utCalendar( double *value, int *nvals, double *origin_factor, int *hasorigin_powers,
-	int *year, int *month, int *day, int *hour, int *minute, double *second, int *retval )
-{
-	utUnit 	u;
-	float	f_sec;
-	int 	i;
-
-	if( *nvals < 1 ) {	
-		fprintf( stderr, "utCalendar (R version): error: passed funny # of vals to convert: %d\n", *nvals );
-		*retval = -1;
-		return;
-		}
-
-	R_ututil_Rstyle_to_utUnit( origin_factor, hasorigin_powers, &u );
-
-	for( i=0; i<(*nvals); i++ ) {
-		if( (*retval = utCalendar( *(value+i), &u, (year+i), (month+i),
-				(day+i), (hour+i), (minute+i), &f_sec )) != 0 ) {
-			if( *retval == UT_ENOINIT ) {
-				fprintf( stderr, "utCalendar (R version): error: udunits package not initialized yet!\n");
-				fprintf( stderr, "You must call utInit() first.\n" );
-				return;
-				}
-
-			if( *retval == UT_EINVALID ) {
-				fprintf( stderr, "utCalendar (R version): error: units are not time-like!\n" );
-				return;
-				}
-
-			fprintf( stderr, "utCalendar (R version): unknown error %d!\n",
-				*retval );
-
-			return;
-			}
-		*(second+i) = (double)f_sec;
 		}
 }
 

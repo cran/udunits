@@ -5,13 +5,17 @@
  Converts a given amount of a temporal unit into a UTC-reference date and time.
 }
 \usage{
- utCalendar( value, unit, style='list' )
+ utCalendar( value, unit, style='list', calendar='standard' )
 }
 \arguments{
   \item{value}{An amount (quantity) of the given temporal unit, or a vector thereof.}
   \item{unit}{A temporal unit that has an origin.}
   \item{style}{Specifies the style of returned value when a vector of input values is given. 
   Can be either 'list' or 'array'.  See below for details.}
+  \item{calendar}{Specifies the calendar to use in the date calculations.  Can be
+  ``standard'' (the default), ``gregorian'' (a synonym for standard), ``noleap'' (a calendar
+  with no leap days), ``365\_day'' (a synonym for ``noleap''), or ``360\_day'' (a calendar
+  with 12 months, each of which has 30 days).}
 }
 \value{If the input 'value' is a scalar, returns an object of class 'utDate'.
 If the input is a vector of N values, the returned value depends on the
@@ -22,7 +26,7 @@ So in this case, the year of the n'th input value is given by retval[[n]]$year.
 If style=='array', this instead returns a single object with fields
 year, month, day, hour, minute, and second, each of which is an array
 with N elements.  So in this case the year of the n'th input
-value is given by retval$year[[n]].
+value is given by retval$year[n].
 In either event, class 'utDate' has the following fields:
  year, month, day, hour, minute, second.
 }
